@@ -1,0 +1,54 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <title>Конвертер валют</title>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="{% static 'converter/converter.css' %}">
+
+
+</head>
+
+    <body>
+    <div class="converter">
+        <!-- Левая часть: поле ввода и выбор валюты -->
+        <div class="currency-box">
+            <input value=1 id="input1" type="number" oninput="updateOutput('input1', 'input2', 'currency1', 'currency2')" />
+            <select id="currency1" class="currency-select" on="updateOutput('input1', 'input2', 'currency1', 'currency2')">
+                {% for currency in currencies %}
+                    <option value="{{ currency.code }}"
+                            {% if currency.code == default_currency_2.code %}selected{% endif %}>
+                        {{ currency.code }} — {{ currency.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+
+        <!-- Кнопка для обмена валют местами -->
+        <button class="swap-btn">⇆</button>
+
+    <!-- Правая часть: поле ввода и выбор валюты -->
+        <div class="currency-box" >
+            <input id="input2" type="number" oninput="updateOutput('input2', 'input1', 'currency2', 'currency1')" />
+            <select id="currency2" class="currency-select" onselect="updateOutput('input2', 'input1', 'currency2', 'currency1')">
+                {% for currency in currencies %}
+                    <option value="{{ currency.code }}"
+                            {% if currency.code == default_currency_1.code %}selected{% endif %}>
+                        {{ currency.code }} — {{ currency.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+
+
+</div>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    {{ rates|json_script:"rates-data" }}
+    <script src="{% static 'converter/converter.js' %}"> </script>
+</body>
+
+</html>
