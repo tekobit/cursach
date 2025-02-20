@@ -19,10 +19,11 @@ function updateOutput(sourceId, targetId, currency1, currency2) {
 }
 
 $(function(){
-    $(".currency-select").select2();
+    $('.currency-select').select2();
     $(".currency-select").on("change", function () {
         updateOutput('input1', 'input2', 'currency1', 'currency2');
     });
+
 })
 
 document.querySelector('.swap-btn').addEventListener('click', function () {
@@ -53,3 +54,33 @@ let currency1= document.getElementById('currency1');
 currency1.addEventListener("change", function() {
     console.log(currency1.value);
 });
+
+window.onload = function() {
+    updateOutput('input1', 'input2', 'currency1', 'currency2');
+};
+
+
+document.querySelectorAll('.only_number_input').forEach(input => input.addEventListener("keydown", (event) => {
+    // Allow numbers (0-9)
+    if (event.code.startsWith("Digit")) {
+        return; // Allow numbers
+    }
+
+    // Allow Backspace, Delete, Arrow keys, Tab, Enter
+    if (["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab", "Enter"].includes(event.code)) {
+        return;
+    }
+
+    // Allow decimal point (.) but only one
+    if (event.code === "Period" && !event.target.value.includes(".")) {
+        return;
+    }
+
+    // If not allowed, prevent input
+    event.preventDefault();
+}))
+
+function isNumberKey(evt) {
+    let charCode = (evt.which) ? evt.which : evt.keyCode;
+    return !(charCode > 31 && (charCode < 48 || charCode > 57));
+}

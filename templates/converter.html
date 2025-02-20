@@ -14,8 +14,8 @@
     <div class="converter">
         <!-- Левая часть: поле ввода и выбор валюты -->
         <div class="currency-box">
-            <input value=1 id="input1" type="number" oninput="updateOutput('input1', 'input2', 'currency1', 'currency2')" />
-            <select id="currency1" class="currency-select" on="updateOutput('input1', 'input2', 'currency1', 'currency2')">
+            <input value=1 class="only_number_input" id="input1" inputmode="decimal" maxlength="20"  oninput="updateOutput('input1', 'input2', 'currency1', 'currency2')" />
+            <select id="currency1" class="currency-select">
                 {% for currency in currencies %}
                     <option value="{{ currency.code }}"
                             {% if currency.code == default_currency_2.code %}selected{% endif %}>
@@ -31,8 +31,8 @@
 
     <!-- Правая часть: поле ввода и выбор валюты -->
         <div class="currency-box" >
-            <input id="input2" type="number" oninput="updateOutput('input2', 'input1', 'currency2', 'currency1')" />
-            <select id="currency2" class="currency-select" onselect="updateOutput('input2', 'input1', 'currency2', 'currency1')">
+            <input id="input2" class="only_number_input" inputmode="decimal" maxlength="20" oninput="updateOutput('input2', 'input1', 'currency2', 'currency1')" />
+            <select id="currency2" class="currency-select" >
                 {% for currency in currencies %}
                     <option value="{{ currency.code }}"
                             {% if currency.code == default_currency_1.code %}selected{% endif %}>
