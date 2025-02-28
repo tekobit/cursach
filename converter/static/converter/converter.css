@@ -1,4 +1,3 @@
-/* Сброс стилей по умолчанию */
 * {
     margin: 0;
     padding: 0;
@@ -7,7 +6,7 @@
 
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4; /* Светлый фон */
+    background-color: #f4f4f4;
     color: #333;
     display: flex;
     justify-content: center;
@@ -31,7 +30,6 @@ body {
     align-items: flex-start;
 }
 
-/* Общая ширина для input и select */
 .currency-box input,
 .currency-box select {
     width: 160px;
@@ -43,7 +41,6 @@ body {
     text-align: right;
 }
 
-/* Кнопка для обмена валют */
 .swap-btn {
     display: flex;
     align-items: center;

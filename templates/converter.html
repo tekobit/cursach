@@ -12,7 +12,6 @@
 
     <body>
     <div class="converter">
-        <!-- Левая часть: поле ввода и выбор валюты -->
         <div class="currency-box">
             <input value=1 class="only_number_input" id="input1" inputmode="decimal" maxlength="20"  oninput="updateOutput('input1', 'input2', 'currency1', 'currency2')" />
             <select id="currency1" class="currency-select">
@@ -26,10 +25,8 @@
         </div>
 
 
-        <!-- Кнопка для обмена валют местами -->
         <button class="swap-btn">⇆</button>
 
-    <!-- Правая часть: поле ввода и выбор валюты -->
         <div class="currency-box" >
             <input id="input2" class="only_number_input" inputmode="decimal" maxlength="20" oninput="updateOutput('input2', 'input1', 'currency2', 'currency1')" />
             <select id="currency2" class="currency-select" >

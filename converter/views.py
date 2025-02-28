@@ -7,15 +7,15 @@ from django.http import HttpResponse
 
 
 def index(request):
-    SECRET_KEY = config("SECRET_KEY")
+    APP_ID = config("APP_ID")
     URL = config("URL")
 
     rates = cache.get("currency_exchange_rates_cache")
     if not rates:
-        response = requests.get(f"{URL}?app_id={SECRET_KEY}")
+        response = requests.get(f"{URL}?app_id={APP_ID}")
         data = response.json()
         rates = data['rates']
-        cache.set("currency_exchange_rates_cache", rates,timeout=3600) # 3600 cause api data updates hourly
+        cache.set("currency_exchange_rates_cache", rates,timeout=3600) # data updates hourly
     with open("resources/currencies.json", 'r', encoding='utf-8') as file:
         currencies = json.load(file)
     with open("resources/default_currencies.json", 'r', encoding='utf-8') as file:
