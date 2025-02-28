@@ -21,6 +21,7 @@ from converter import views
 from django.contrib import admin
 from django.urls import include, path
 
+# конфигурация URL паттернов
 urlpatterns = [
     path("converter/", include("converter.urls")),
 ]

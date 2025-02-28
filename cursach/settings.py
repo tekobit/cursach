@@ -14,8 +14,10 @@ import os
 from pathlib import Path
 from decouple import config
 
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+#Загрузка переменных из.env
 SECRET_KEY = config('SECRET_KEY')
 
 DEBUG = True
@@ -63,6 +65,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'cursach.wsgi.application'
 
+# конфигурация базы данных
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -70,6 +73,7 @@ DATABASES = {
     }
 }
 
+# конфигурация кэша
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.db.DatabaseCache",
@@ -102,6 +106,8 @@ USE_TZ = True
 
 
 STATIC_URL = 'static/'
+
+# Пути к статическим и стилевым файлам
 STATICFILES_DIRS = [BASE_DIR / "converter" / "static"]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

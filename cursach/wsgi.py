@@ -11,6 +11,7 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
+# конфигурируем окружение
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cursach.settings')
 
 application = get_wsgi_application()

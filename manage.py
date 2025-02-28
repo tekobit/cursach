@@ -10,6 +10,7 @@ def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cursach.settings')
 
+# Пытаемся импортировать и запустить Django's command-line utility'
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
@@ -21,5 +22,6 @@ def main():
     execute_from_command_line(sys.argv)
 
 
+# Запуск приложения
 if __name__ == '__main__':
     main()
