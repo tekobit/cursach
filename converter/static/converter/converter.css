@@ -1,4 +1,3 @@
-/* стили для элементов HTML */
 
 /*глобальные стили*/
 * {
@@ -7,18 +6,19 @@
     box-sizing: border-box;
 }
 
-/* стили для body в html */
+
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
     color: #333;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     height: 100vh;
 }
 
-/* стили для целого блока конвертера */
+
 .converter {
     display: flex;
     align-items: center;
@@ -27,15 +27,17 @@ body {
     padding: 1.5rem;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
 }
 
-/*стили для левого и правого блоков валют*/
+
+
 .currency-box {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
 }
-/* стили для ввода и выпадающего списка*/
+
 .currency-box input,
 .currency-box select {
     width: 160px;
@@ -46,7 +48,8 @@ body {
     font-size: 1rem;
     text-align: right;
 }
-/* кнопка для смены местами валют */
+
+
 .swap-btn {
     display: flex;
     align-items: center;
@@ -64,3 +67,74 @@ body {
 .swap-btn:hover {
     background-color: #1f6691;
 }
+
+.converter-whole {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.hst_conv {
+    background-color: #1f6691;
+    width: auto;
+    border: none;
+    color: white;
+    padding: 7px 8px;
+    text-align: center;
+    font-size: 12px;
+    margin: 4px 2px;
+
+    display: inline-block;
+    text-decoration: none;
+    cursor: pointer;
+    border-radius: 8px;
+
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.hst_conv.show {
+    opacity: 0.6;
+}
+.hst_conv.disappear {
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
+}
+
+
+
+.hst_conv:hover {opacity: 1}
+
+.remove-btn {
+    margin-left: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    color: floralwhite;
+    border: white;
+    border-radius: 5px;
+    padding: 5px 10px;
+    transition: background-color 0.4s;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 30px;
+    height: 30px;
+    overflow: hidden;
+}
+
+.remove-btn span {
+    display: inline-block;
+    font-size: 20px;
+}
+
+.remove-btn:hover {
+    color: black;
+    background-color: white;
+}
+
+#historyContainer {
+    display: flex;
+    align-items: center;
+}
+
+
