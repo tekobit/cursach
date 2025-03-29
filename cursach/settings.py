@@ -108,6 +108,9 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 # Пути к статическим и стилевым файлам
-STATICFILES_DIRS = [BASE_DIR / "converter" / "static"]
-
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "converter\\static")
+]
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+

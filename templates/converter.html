@@ -8,7 +8,7 @@
     <!--** загрузка Select2 и сss ** -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
     <link rel="stylesheet" href="{% static 'converter/converter.css' %}?v={% now 'U' %}">
-
+    <link rel="icon" type="image/x-icon" href="{% static 'converter/favicon.ico' %}">
 
 </head>
 
@@ -16,11 +16,12 @@
 <div class="converter-whole" >
 
     <div class="converter">
+        <button id="izbrannoeBtn" >☆</button>
+
         <div class="currency-box">
             <!--** первое поле для ввода и выбора валюты ** -->
 
-            <input value=1 class="only_number_input" id="input1" inputmode="decimal" maxlength="20"
-                   oninput="updateOutput('input1', 'input2', 'currency1', 'currency2')"/>
+            <input value=1 class="only_number_input" id="input1" inputmode="decimal" maxlength="20"/>
             <select id="currency1" class="currency-select">
                 {% for currency in currencies %}
                     <option value="{{ currency.code }}"
@@ -37,8 +38,7 @@
 
         <div class="currency-box">
             <!--** второе поле для ввода и выбора валюты ** -->
-            <input id="input2" class="only_number_input" inputmode="decimal" maxlength="20"
-                   oninput="updateOutput('input2', 'input1', 'currency2', 'currency1')"/>
+            <input id="input2" class="only_number_input" inputmode="decimal" maxlength="20"/>
 
             <select id="currency2" class="currency-select">
                 {% for currency in currencies %}
@@ -53,7 +53,8 @@
 
     </div>
 
-    <div id="historyContainer"></div>
+    <div id="historyList"></div>
+    <div id="favouriteList"></div>
 
 </div>
 
@@ -65,7 +66,9 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <!-- подключаем js -->
-<script src="{% static 'converter/converter.js' %}"></script>
+<script type="module"  src="{% static 'converter/converter.js' %}?v={% now 'U' %}"></script>
+<script type="module"  src="{% static 'converter/history.js' %}?v={% now 'U' %}"></script>
+<script type="module"  src="{% static 'converter/updateOutput.js' %}?v={% now 'U' %}"></script>
 
 </body>
 

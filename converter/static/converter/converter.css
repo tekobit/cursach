@@ -28,6 +28,7 @@ body {
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     margin-bottom: 1rem;
+    position: relative;
 }
 
 
@@ -74,6 +75,18 @@ body {
     align-items: center;
 }
 
+#historyList {
+    opacity: 1;
+    transition: opacity 0.5s ease-in-out;
+    display: flex;
+    align-items: center;
+}
+
+
+#historyList.fade-out {
+    opacity: 0;
+}
+
 .hst_conv {
     background-color: #1f6691;
     width: auto;
@@ -100,8 +113,6 @@ body {
     opacity: 0;
     transition: opacity 0.5s ease-out;
 }
-
-
 
 .hst_conv:hover {opacity: 1}
 
@@ -132,9 +143,77 @@ body {
     background-color: white;
 }
 
-#historyContainer {
-    display: flex;
-    align-items: center;
+#izbrannoeBtn {
+    position: absolute;
+    top: -4px;
+    right: 3px;
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #ccc;
+    transition: color 0.3s;
 }
+
+#izbrannoeBtn.active {
+    color: gold;
+}
+
+#izbrannoeBtn:hover {
+    color: gold;
+}
+
+.notification {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background-color: #f44336;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.notification.show {
+    opacity: 1;
+}
+
+.notification.disappear {
+    opacity: 0;
+}
+
+
+.fav_conv {
+    background-color: #1f6691;
+    width: auto;
+    border: none;
+    color: white;
+    padding: 7px 8px;
+    text-align: center;
+    font-size: 12px;
+    margin: 4px 2px;
+
+    display: inline-block;
+    text-decoration: none;
+    cursor: pointer;
+    border-radius: 8px;
+
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.fav_conv.show {
+    opacity: 0.6;
+}
+.fav_conv.disappear {
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
+}
+
+
+
+.fav_conv:hover {opacity: 1}
 
 
