@@ -1,0 +1,45 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход</title>
+    <link rel="stylesheet" href="{% static 'converter/css/login.css' %}?v={% now 'U' %}">
+
+</head>
+<body>
+
+<div class="container">
+    <h2>Вход</h2>
+    <form method="POST">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="id_username">Имя пользователя</label>
+            <input type="text" name="username" id="id_username" required>
+            {% for error in form.username.errors %}
+                <p class="error">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <div class="form-group">
+            <label for="id_password">Пароль</label>
+            <input type="password" name="password" id="id_password" required>
+            {% for error in form.password.errors %}
+                <p class="error">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        {% if form.non_field_errors %}
+            {% for error in form.non_field_errors %}
+                <p class="error">{{ error }}</p>
+            {% endfor %}
+        {% endif %}
+
+        <button type="submit">Войти</button>
+    </form>
+</div>
+
+</body>
+</html>

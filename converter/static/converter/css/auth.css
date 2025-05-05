@@ -1,0 +1,18 @@
+.auth-bar {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.auth-link {
+    margin-right: 15px;
+    text-decoration: none;
+    color: #1f6691;
+    font-weight: bold;
+}
+
+.auth-username {
+    margin-right: 10px;
+    font-weight: bold;
+}

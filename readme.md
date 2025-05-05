@@ -16,3 +16,9 @@ APP_ID=ключ_с_openexchangerates.org
 ```
 3. Запустите сервер:
 `python manage.py runserver`
+
+
+Если не работает регистрация и питон не находит нужную бд для пользователей
+нужно прописать в терминале в корневой папке  
+`python manage.py makemigrations`  
+`python manage.py migrate`

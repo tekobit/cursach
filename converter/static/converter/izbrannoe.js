@@ -1,7 +1,11 @@
 import {updateOutput} from './updateOutput.js';
 
 // добавляем в избранное
-
+//TODO неправильно перерассчитываются курсы валют если добавить вал1-вал2 и вал2-вал1 .
+// Сначала все правильно используется курс вал2-вал1 т.к.
+// он добавлен последним, но после удаления вал2-вал1 должен использоваться вал1-вал2
+// но этого не происходит почему-то no ideas((
+// как вариант можно удалить впринципе эту возможность
 export function saveToFavourites(sourceCurrency, targetCurrency) {
     let favourites = JSON.parse(localStorage.getItem("favourites")) || [];
 

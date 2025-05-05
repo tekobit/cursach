@@ -1,0 +1,9 @@
+<div class="auth-bar">
+    {% if user.is_authenticated %}
+        <span class="auth-username">{{ user.username }}</span>
+        <a href="{% url 'logout' %}" class="auth-link">Выйти</a>
+    {% else %}
+        <a href="{% url 'login' %}" class="auth-link">Вход</a>
+        <a href="{% url 'register' %}" class="auth-link">Регистрация</a>
+    {% endif %}
+</div>

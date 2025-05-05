@@ -24,6 +24,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+LANGUAGE_CODE = 'ru'
+
 INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -96,7 +98,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
 
