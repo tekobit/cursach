@@ -1,0 +1,45 @@
+<div class="sidebar" id="sidebar">
+    <h3>Редактирование курса </h3>
+    <div class="converter-sidebar">
+        <div class="currency-box-sidebar">
+            <!--** первое поле для ввода и выбора валюты ** -->
+
+            <input value=1 class="only_number_input" id="input1-sidebar" inputmode="decimal" maxlength="20"/>
+            <select id="currency1-sidebar" class="currency-select-sidebar">
+                {% for currency in currencies %}
+                    <option value="{{ currency.code }}"
+                            {% if currency.code == default_currency_2.code %}selected{% endif %}>
+                        {{ currency.code }} — {{ currency.name }}
+                    </option>
+                {% endfor %}
+            </select>
+            <input type="radio" id="radio1" name="radio-sidebar" value="1" checked>
+            <label for="option1">Вариант 1</label><br>
+        </div>
+
+        <div class="currency-box-sidebar">
+            <!--** второе поле для ввода и выбора валюты ** -->
+            <input id="input2-sidebar" class="only_number_input" inputmode="decimal" maxlength="20"/>
+
+            <select id="currency2-sidebar" class="currency-select-sidebar">
+                {% for currency in currencies %}
+                    <option value="{{ currency.code }}"
+                            {% if currency.code == default_currency_1.code %}selected{% endif %}>
+                        {{ currency.code }} — {{ currency.name }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <input type="radio" id="radio2" name="radio-sidebar" value="2">
+            <label for="option2">Вариант 2</label><br>
+
+        </div>
+
+
+    </div>
+
+
+    <button id="save-btn">Сохранить</button>
+
+    <div id="changed_currencies"></div>
+</div>

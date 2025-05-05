@@ -85,7 +85,7 @@ export function handleActiveness() {
 
 
 // уведомление (в данный момент используется только для максимума избранных пар)
-function showNotification(message) {
+export function showNotification(message) {
     const notification = document.createElement('div');
     notification.className = 'notification';
     notification.textContent = message;

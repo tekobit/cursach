@@ -1,16 +1,42 @@
 import {updateOutput} from './updateOutput.js';
 import * as izbrannoe from './izbrannoe.js';
+import {
+    renderChangedCurrencies,
+    updateSidebarSize,
+    saveCurrencyRate,
+    loadChangedCurrencyToRates
+} from "./sidebar/sidebar.js";
+
+
+document.getElementById("menu-btn").addEventListener("click", function(){
+    document.getElementById("sidebar").classList.toggle("open");
+    updateSidebarSize(); // Подгоняем высоту
+})
+document.getElementById("save-btn").addEventListener("click", function(){
+    saveCurrencyRate()
+    loadChangedCurrencyToRates()
+    renderChangedCurrencies()
+    updateOutput('input1', 'input2', 'currency1', 'currency2');
+})
+
+
+window.addEventListener("load", updateSidebarSize);
+window.addEventListener("resize", updateSidebarSize);
 
 // при загрузке страницы
 window.onload = function() {
+    loadChangedCurrencyToRates()
+
     updateOutput('input1', 'input2', 'currency1', 'currency2');
     izbrannoe.renderFavourites();
     izbrannoe.handleActiveness();
+    renderChangedCurrencies();
 };
 
 // добавляем события на поля выбора валют
 $(function(){
     $('.currency-select').select2();
+    $('.currency-select-sidebar').select2();
 
     $(".currency-select").on("change", function () {
         updateOutput('input1', 'input2', 'currency1', 'currency2');

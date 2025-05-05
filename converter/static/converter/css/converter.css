@@ -17,6 +17,10 @@ body {
     align-items: center;
     height: 100vh;
 }
+body.open-menu {
+    margin-left: 250px;
+    transition: margin-left 0.3s;
+}
 
 
 .converter {

@@ -1,4 +1,5 @@
 import {updateOutput} from './updateOutput.js';
+import {updateSidebarSize} from "./sidebar/sidebar.js";
 
 // добавляем в историю
 
@@ -43,9 +44,11 @@ export function renderHistory() {
     historyContainer.classList.add("fade-out");
 
     historyContainer.addEventListener('transitionend', () => {
+
         historyContainer.innerHTML = "";  // Clear the container's content
         let history = JSON.parse(localStorage.getItem("conversionHistory")) || [];
         let lastIndex = history.length - 1;
+
 
         for (let i = lastIndex; i > lastIndex - 7 && i >= 0; i--) {
             let entry = history[i];
@@ -83,9 +86,13 @@ export function renderHistory() {
 
             setTimeout(() => {
                 btn.classList.add("show");
+
             }, 10);
         }
 
         historyContainer.classList.remove("fade-out");
+        updateSidebarSize()
+
+
     }, { once: true });
 }

@@ -1,0 +1,147 @@
+#menu-btn {
+    position: fixed;
+    top: 15px;
+    left: 2%;
+    font-size: 24px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding-bottom: 8px;
+}
+
+.sidebar {
+    top: 1%;
+    position: fixed;
+    left: -500px;
+    width: 500px;
+    background-color: #7f96aa;
+    color: white;
+    padding: 20px;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+    transition: left 0.3s;
+    overflow-y: auto;
+    border-radius: 15px;
+}
+
+/* Когда меню открыто */
+.sidebar.open  {
+    left: 1%;
+}
+
+.sidebar-converter {
+    display: flex
+}
+
+
+.converter-sidebar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
+    position: relative;
+    padding-bottom: unset;
+    margin-top: 1rem;
+}
+
+.currency-box-sidebar {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.currency-box-sidebar input,
+.currency-box-sidebar select {
+    width: 200px;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    text-align: right;
+}
+
+#save-btn {
+    background-color: #4a6188;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 10px;
+    width: 100%;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+#save-btn:hover {
+    background-color: #537297;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+#save-btn:active {
+    background-color: #2a65a4;
+    transform: translateY(0);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+#save-btn:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+input[type="radio"] {
+    margin-top: 10px;
+}
+
+
+
+.changed_currency_info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    color: #333;
+    background-color: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 7px 15px;
+    margin: 8px 0;
+    transition: background-color 0.2s ease;
+}
+
+.changed_currency_info.disappear {
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
+}
+
+
+.changed_currency_info:hover {
+    background-color: #e9ecef;
+}
+
+.remove-btn-sidebar {
+    cursor: pointer;
+    font-size: 14px;
+    color: black;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 5px 10px;
+    transition: all 0.4s;
+    background-color: #f8f9fa;
+    margin-left: 10px;
+}
+
+
+
+.remove-btn-sidebar:hover {
+    color: white;
+    background-color: black;
+}

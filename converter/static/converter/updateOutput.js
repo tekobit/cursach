@@ -1,9 +1,10 @@
 import {saveToHistory,renderHistory} from './history.js'
 // функция для изменения значения в полях ввода и вывода
 let debounceTimer;
-let rates = JSON.parse(document.getElementById("rates-data").textContent);
 
 export function updateOutput(sourceId, targetId, currency1Id, currency2Id,amount = null) {
+    let rates = JSON.parse(document.getElementById("rates-data").textContent);
+    console.log(rates)
 
     const sourceCurrency = document.getElementById(currency1Id).value;
     const targetCurrency = document.getElementById(currency2Id).value;
@@ -20,11 +21,17 @@ export function updateOutput(sourceId, targetId, currency1Id, currency2Id,amount
 
 
     const targetInput = document.getElementById(targetId);
-    targetInput.value = isNaN(result) ? '' : result.toFixed(2);
+    targetInput.value = isNaN(result) ? '' : Number( result.toFixed(Math.max( getDecimalPlaces(sourceRate),getDecimalPlaces(targetRate) ) )  );
+
 
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => {
         saveToHistory(sourceCurrency, targetCurrency, sourceValue); // Здесь вызываем сохранение
         renderHistory()
     }, 800); // тут таймер, сколько прождать, чтобы сохранить в историю хардкод(((
+}
+
+function getDecimalPlaces(num) {
+    if (!num.toString().includes('.')) return 0; // No decimal point
+    return num.toString().split('.')[1].length;
 }
