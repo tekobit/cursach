@@ -6,3 +6,4 @@
 
 # файлы PyCharm
 /.idea/
+/converter/migrations/

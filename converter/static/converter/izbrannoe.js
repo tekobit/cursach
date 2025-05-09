@@ -5,50 +5,58 @@ import {updateOutput} from './updateOutput.js';
 // Сначала все правильно используется курс вал2-вал1 т.к.
 // он добавлен последним, но после удаления вал2-вал1 должен использоваться вал1-вал2
 // но этого не происходит почему-то no ideas((
-// как вариант можно удалить впринципе эту возможность
-export function saveToFavourites(sourceCurrency, targetCurrency) {
-    let favourites = JSON.parse(localStorage.getItem("favourites")) || [];
+// как вариант можно удалить в принципе эту возможность
+export async function saveToFavourites(sourceCurrency, targetCurrency) {
+    const csrf = getCookie('csrftoken');
+    if (window.isAuthenticated) {
+        const response = await fetch('/converter/api/favourites/add/', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json',
+                'X-CSRFToken': csrf},
+            body: JSON.stringify({from: sourceCurrency, to: targetCurrency})
+        });
 
-    favourites.push({
-        from: sourceCurrency,
-        to: targetCurrency,
-
-    });
-    if (favourites.length > 6) {
-        let izbr = document.getElementById("izbrannoeBtn");
-        izbr.classList.toggle("active");
-        showNotification("Набрано максимальное количество избранных пар")
-        return;
+        if (!response.ok) {
+            const error = await response.json();
+            showNotification(error.error || "Ошибка");
+        }
+    } else {
+        let favourites = getFavouritesFromCookie();
+        if (favourites.length >= 6) {
+            showNotification("Набрано максимальное количество избранных пар");
+            return;
+        }
+        favourites.push({ from: sourceCurrency, to: targetCurrency });
+        setFavouritesToCookie(favourites);
     }
 
-    localStorage.setItem("favourites", JSON.stringify(favourites));
 }
 
 // удаляем из избранного
 
-export function removeFromFavourites(sourceCurrency, targetCurrency) {
-    let favourites = JSON.parse(localStorage.getItem("favourites")) || [];
+export async function removeFromFavourites(sourceCurrency, targetCurrency) {
+    const csrf = getCookie('csrftoken');
+    if (window.isAuthenticated) {
+        await fetch('/converter/api/favourites/remove/', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json',
+                'X-CSRFToken': csrf},
+            body: JSON.stringify({from: sourceCurrency, to: targetCurrency})
+        });
+    } else {
+        removeFromFavouritesCookie(sourceCurrency, targetCurrency);
+    }
 
-    favourites.forEach((entry, index) => {
-        if (sourceCurrency === entry.from && targetCurrency === entry.to  ) {
-            favourites.splice(index, 1);
-        }
-    });
-
-    localStorage.setItem("favourites", JSON.stringify(favourites));
 }
 
 // рендерим избранное
 
-export  function renderFavourites() {
-
+export  async function renderFavourites() {
+    const favourites = await fetchFavourites();
     let favouriteList = document.getElementById("favouriteList");
     favouriteList.innerHTML = "";
 
-    let favourites = JSON.parse(localStorage.getItem("favourites")) || [];
-    for (let i = 0; i < favourites.length ; i++) {
-        let entry = favourites[i];
-
+    favourites.forEach(entry => {
         let btn = document.createElement("button");
         btn.innerText = `${entry.from} → ${entry.to} `;
         btn.onclick = () => {
@@ -59,27 +67,25 @@ export  function renderFavourites() {
             $("#currency2").trigger("change");
 
             updateOutput("input1", "input2", "currency1", "currency2");
-            handleActiveness()
-        }
+            handleActiveness();
+        };
         btn.className = "fav_conv";
-
-
         favouriteList.appendChild(btn);
-        setTimeout(() => {
-            btn.classList.add("show");
-        }, 10);
-    }
-
+        setTimeout(() => btn.classList.add("show"), 10);
+    });
 }
 
 // проверяем, если есть в списке избранных, красим кнопку желтым
-export function handleActiveness() {
+export async function handleActiveness() {
     let izbr = document.getElementById("izbrannoeBtn");
-    let from = document.getElementById("currency1").value ;
-    let to = document.getElementById("currency2").value ;
-    let favourites = JSON.parse(localStorage.getItem("favourites")) || [];
+
+    let from = document.getElementById("currency1").value;
+    let to = document.getElementById("currency2").value;
+
+    const favourites = await fetchFavourites();
+
     izbr.classList.remove("active");
-    for (let i = 0; i < favourites.length ; i++) {
+    for (let i = 0; i < favourites.length; i++) {
         let entry = favourites[i];
         if (entry.from === from && entry.to === to) {
             izbr.classList.add("active");
@@ -106,4 +112,41 @@ export function showNotification(message) {
             notification.remove();
         }, 500);
     }, 2000);
+}
+
+async function fetchFavourites() {
+    if (window.isAuthenticated) {
+        const response = await fetch('/converter/api/favourites/');
+        return await response.json();
+    } else {
+        return getFavouritesFromCookie();
+    }
+
+}
+
+
+// отдельные методы для работы с куки, в случае когда пользователь не зарегистрирован
+function getFavouritesFromCookie() {
+    const match = document.cookie.match(/(?:^|; )favourites=([^;]*)/);
+    if (!match) return [];
+    try {
+        return JSON.parse(decodeURIComponent(match[1]));
+    } catch (e) {
+        return [];
+    }
+}
+
+function setFavouritesToCookie(favourites) {
+    document.cookie = "favourites=" + encodeURIComponent(JSON.stringify(favourites)) +
+        "; path=/; max-age=604800";  // 7 дней
+}
+
+function removeFromFavouritesCookie(sourceCurrency, targetCurrency) {
+    let favourites = getFavouritesFromCookie();
+
+    favourites = favourites.filter(entry => !(entry.from === sourceCurrency && entry.to === targetCurrency));
+
+    setFavouritesToCookie(favourites);
+
+    renderFavourites();
 }

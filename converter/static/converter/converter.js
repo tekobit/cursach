@@ -6,6 +6,7 @@ import {
     saveCurrencyRate,
     loadChangedCurrencyToRates
 } from "./sidebar/sidebar.js";
+import {handleActiveness} from "./izbrannoe.js";
 
 
 document.getElementById("menu-btn").addEventListener("click", function(){
@@ -102,9 +103,9 @@ let izbr = document.getElementById("izbrannoeBtn");
 
 
 // обрабатываем клик на кнопку звезды
-izbr.addEventListener("click", function () {
+izbr.addEventListener("click", async function () {
     izbr.classList.toggle("active");
-    let isActive= false
+    let isActive = false
     const currency1Value = document.getElementById('currency1').value;
     const currency2Value = document.getElementById('currency2').value;
 
@@ -115,11 +116,13 @@ izbr.addEventListener("click", function () {
     })
 
     if (isActive) {
-        izbrannoe.saveToFavourites(currency1Value,currency2Value)
-        izbrannoe.renderFavourites()
+        await izbrannoe.saveToFavourites(currency1Value, currency2Value)
+        await izbrannoe.renderFavourites()
+        handleActiveness()
     } else {
-        izbrannoe.removeFromFavourites(currency1Value,currency2Value)
-        izbrannoe.renderFavourites()
+        await izbrannoe.removeFromFavourites(currency1Value, currency2Value)
+        await izbrannoe.renderFavourites()
+        handleActiveness
     }
 
 });

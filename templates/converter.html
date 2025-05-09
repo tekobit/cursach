@@ -67,16 +67,22 @@
 
 <!-- загружаем в js табличку -->
 {{ rates|json_script:"rates-data" }}
+{% csrf_token %}
 
 <!-- подключаем скрипты -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <!-- подключаем js -->
+<script src="{% static 'converter/csrf.js' %}"></script>
+<script>
+    window.isAuthenticated = {{ request.user.is_authenticated|yesno:"true,false" }};
+</script>
 <script type="module"  src="{% static 'converter/sidebar/sidebar.js' %}?v={% now 'U' %}"></script>
 <script type="module"  src="{% static 'converter/converter.js' %}?v={% now 'U' %}"></script>
 <script type="module"  src="{% static 'converter/history.js' %}?v={% now 'U' %}"></script>
 <script type="module"  src="{% static 'converter/updateOutput.js' %}?v={% now 'U' %}"></script>
+
 
 </body>
 
