@@ -9,7 +9,7 @@ import {updateOutput} from './updateOutput.js';
 export async function saveToFavourites(sourceCurrency, targetCurrency) {
     const csrf = getCookie('csrftoken');
     if (window.isAuthenticated) {
-        const response = await fetch('/converter/api/favourites/add/', {
+        const response = await fetch('/api/favourites/add/', {
             method: 'POST',
             headers: {'Content-Type': 'application/json',
                 'X-CSRFToken': csrf},
@@ -37,7 +37,7 @@ export async function saveToFavourites(sourceCurrency, targetCurrency) {
 export async function removeFromFavourites(sourceCurrency, targetCurrency) {
     const csrf = getCookie('csrftoken');
     if (window.isAuthenticated) {
-        await fetch('/converter/api/favourites/remove/', {
+        await fetch('/api/favourites/remove/', {
             method: 'POST',
             headers: {'Content-Type': 'application/json',
                 'X-CSRFToken': csrf},
@@ -116,7 +116,7 @@ export function showNotification(message) {
 
 async function fetchFavourites() {
     if (window.isAuthenticated) {
-        const response = await fetch('/converter/api/favourites/');
+        const response = await fetch('/api/favourites/');
         return await response.json();
     } else {
         return getFavouritesFromCookie();

@@ -14,14 +14,12 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.urls import path
-
-from converter import views
 
 from django.contrib import admin
 from django.urls import include, path
 
 # конфигурация URL паттернов
 urlpatterns = [
-    path("converter/", include("converter.urls")),
+    path("", include("converter.urls")),
+    path('admin/', admin.site.urls),
 ]

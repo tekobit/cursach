@@ -1,8 +1,22 @@
 # виртуальное окружение
-/.venv/
+.venv/
+venv/
+ENV/
+env.bak/
+env/
 
 # конфигурационный файл
 /.env
 
 # файлы PyCharm
 /.idea/
+.idea/
+*.swp
+*.swo
+__pycache__/
+*.py[cod]
+*$py.class
+
+# бд
+db.sqlite3
+*.sqlite3

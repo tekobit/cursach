@@ -25,9 +25,9 @@ export function updateOutput(sourceId, targetId, currency1Id, currency2Id,amount
 
 
     clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(() => {
-        saveToHistory(sourceCurrency, targetCurrency, sourceValue); // Здесь вызываем сохранение
-        renderHistory()
+    debounceTimer = setTimeout(async () => { // +async
+        await saveToHistory(sourceCurrency, targetCurrency, sourceValue); // +await
+        // renderHistory()
     }, 800); // тут таймер, сколько прождать, чтобы сохранить в историю хардкод(((
 }
 

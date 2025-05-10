@@ -1,17 +1,15 @@
 import requests
-from django.shortcuts import render
-import json
 from django.core.cache import cache
 from decouple import config
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import logout,login
+from django.contrib.auth import logout, login
 from django.contrib.auth.forms import AuthenticationForm
 
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseForbidden
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
-from .models import FavouriteCurrencyPair
+from .models import FavouriteCurrencyPair, UserConversionHistory
 import json
 
 
@@ -26,7 +24,7 @@ def index(request):
         response = requests.get(f"{URL}?app_id={APP_ID}")
         data = response.json()
         rates = data['rates']
-        cache.set("currency_exchange_rates_cache", rates,timeout=3600)
+        cache.set("currency_exchange_rates_cache", rates, timeout=3600)
     with open("resources/currencies.json", 'r', encoding='utf-8') as file:
         currencies = json.load(file)
     with open("resources/default_currencies.json", 'r', encoding='utf-8') as file:
@@ -41,9 +39,6 @@ def index(request):
     }
     # отдаем шаблон с контекстом
     return render(request, "converter.html", context)
-
-
-# yourapp/views.py
 
 
 def register_view(request):
@@ -69,9 +64,74 @@ def login_view(request):
         form = AuthenticationForm()
     return render(request, "login.html", {"form": form})
 
+
 def logout_view(request):
     logout(request)
     return redirect("converter")
+
+
+@login_required
+def get_history(request):
+    if request.method == "GET":
+        # последние 7 записей
+        history_entries = UserConversionHistory.objects.filter(user=request.user)[:7]
+        data = [
+            {
+                "from": entry.from_currency,
+                "to": entry.to_currency,
+                "amount": entry.amount,
+                "date": entry.timestamp.isoformat()
+            }
+            for entry in history_entries
+        ]
+        return JsonResponse(data, safe=False)
+    return JsonResponse({"error": "Invalid request method"}, status=405)
+
+
+@require_POST
+@login_required
+def add_history_entry(request):
+    try:
+        data = json.loads(request.body)
+        from_currency = data.get("from")
+        to_currency = data.get("to")
+        amount_str = data.get("amount")
+
+        if not all([from_currency, to_currency, amount_str]):
+            return JsonResponse({"error": "Missing data"}, status=400)
+
+        try:
+            amount = float(amount_str)
+        except ValueError:
+            return JsonResponse({"error": "Invalid amount format"}, status=400)
+
+        UserConversionHistory.objects.create(
+            user=request.user,
+            from_currency=from_currency,
+            to_currency=to_currency,
+            amount=amount
+        )
+
+        max_history_size = 150
+        user_history_count = UserConversionHistory.objects.filter(user=request.user).count()
+        if user_history_count > max_history_size:
+            oldest_entries = UserConversionHistory.objects.filter(user=request.user).order_by('timestamp')[
+                             :user_history_count - max_history_size]
+            for entry in oldest_entries:
+                entry.delete()
+
+        return JsonResponse({"success": True}, status=201)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+    except Exception as e:
+        return JsonResponse({"error": "An unexpected error occured"}, status=500)
+
+
+@require_POST
+@login_required
+def clear_user_history(request):
+    UserConversionHistory.objects.filter(user=request.user).delete()
+    return JsonResponse({"success": True})
 
 
 @login_required
@@ -82,6 +142,7 @@ def get_favourites(request):
         for f in favourites
     ]
     return JsonResponse(data, safe=False)
+
 
 @require_POST
 @login_required
@@ -104,6 +165,7 @@ def add_favourite(request):
         return JsonResponse({"error": "Уже добавлено"}, status=400)
 
     return JsonResponse({"success": True})
+
 
 @require_POST
 @login_required
