@@ -12,9 +12,7 @@ export function updateSidebarSize() {
     sidebar.style.top  = `${button.getBoundingClientRect().bottom}px`;
 }
 
-// export function saveCurrencyRate(sourceCurrency, targetCurrency,sourceValue,targetValue) {
-export function saveCurrencyRate() {
-
+export async function saveCurrencyRate() {
 
     let sourceCurrency = document.getElementById("currency1-sidebar").value;
     let targetCurrency = document.getElementById("currency2-sidebar").value;
@@ -23,56 +21,57 @@ export function saveCurrencyRate() {
 
 
     const selected = document.querySelector('input[name="radio-sidebar"]:checked').value;
+    let rates = JSON.parse(document.getElementById("rates-data").textContent);
 
+    let payload;
 
     if (selected === "1") {
-        removeChangedCurrency(sourceCurrency, targetCurrency);
-        let changedCurrencies = JSON.parse(localStorage.getItem("changedCurrencies")) || [];
-        let rates = JSON.parse(document.getElementById("rates-data").textContent);
+        await removeChangedCurrency(sourceCurrency, targetCurrency);
 
-        changedCurrencies.push({
+        payload = {
             from: sourceCurrency,
             to: targetCurrency,
             fromValue: 1,
-            toValue: targetValue/sourceValue,
+            toValue: targetValue / sourceValue,
             oldChangedCurrencyRate: rates[sourceCurrency]
-        });
-        localStorage.setItem("changedCurrencies", JSON.stringify(changedCurrencies));
+        };
 
     } else {
-        removeChangedCurrency(targetCurrency, sourceCurrency);
-        let changedCurrencies = JSON.parse(localStorage.getItem("changedCurrencies")) || [];
-        let rates = JSON.parse(document.getElementById("rates-data").textContent);
+        await removeChangedCurrency(targetCurrency, sourceCurrency);
 
-        changedCurrencies.push({
+        payload = {
             from: targetCurrency,
             to: sourceCurrency,
             fromValue: 1,
-            toValue: sourceValue/targetValue,
+            toValue: sourceValue / targetValue,
             oldChangedCurrencyRate: rates[targetCurrency]
-        });
-        localStorage.setItem("changedCurrencies", JSON.stringify(changedCurrencies));
-
+        };
     }
 
+    if (window.isAuthenticated) {
+        await fetch("/api/changed/add/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCookie("csrftoken")
+            },
+            body: JSON.stringify(payload)
+        })
+    } else {
+        await addChangedCurrencyToCookie(payload);
+    }
 
-    // if (favourites.length > 6) {
-    //     let izbr = document.getElementById("izbrannoeBtn");
-    //     izbr.classList.toggle("active");
-    //     showNotification("Набрано максимальное количество избранных пар")
-    //     return;
-    // }
+    await renderChangedCurrencies();
 
 }
 
-export  function renderChangedCurrencies() {
-    console.log(" tytsa")
+export async function renderChangedCurrencies() {
 
     let changedCurrenciesHTML = document.getElementById("changed_currencies");
     changedCurrenciesHTML.innerHTML = "";
 
-    let changedCurrencies = JSON.parse(localStorage.getItem("changedCurrencies")) || [];
-    for (let i = 0; i < changedCurrencies.length ; i++) {
+    let changedCurrencies = await fetchChangedCurrencies();
+    for (let i = 0; i < changedCurrencies.length; i++) {
         let entry = changedCurrencies[i];
 
         let box = document.createElement("div");
@@ -86,9 +85,9 @@ export  function renderChangedCurrencies() {
             e.stopPropagation();
             box.style.pointerEvents = 'none';
             box.classList.add("disappear");
-            setTimeout(() => {
-                removeChangedCurrency(entry.from, entry.to);
-                renderChangedCurrencies();
+            setTimeout(async () => {
+                await removeChangedCurrency(entry.from, entry.to);
+                await renderChangedCurrencies();
                 updateOutput('input1', 'input2', 'currency1', 'currency2');
             }, 500);
         }
@@ -101,52 +100,99 @@ export  function renderChangedCurrencies() {
 
 }
 
-export function removeChangedCurrency(sourceCurrency, targetCurrency) {
-    console.log("sadas")
+export async function removeChangedCurrency(sourceCurrency, targetCurrency) {
 
-    let changedCurrencies = JSON.parse(localStorage.getItem("changedCurrencies")) || [];
+    let changedCurrencies = await fetchChangedCurrencies();
+    console.log(typeof changedCurrencies);
     let rates = JSON.parse(document.getElementById("rates-data").textContent);
-    // console.log(sourceCurrency +" first " +  targetCurrency + changedCurrencies.length);
-    let newChangedCurrencies = changedCurrencies;
-    console.log(newChangedCurrencies.length);
-    for (let i = 0; i < changedCurrencies.length ; i++) {
-        let entry = changedCurrencies[i];
-        if (sourceCurrency === entry.from && targetCurrency === entry.to ) {
-            // console.log(entry.from + " second " + entry.to);
-            newChangedCurrencies.splice(i, 1);
+
+    const newChangedCurrencies = changedCurrencies.filter(entry => {
+        return !(entry.from === sourceCurrency && entry.to === targetCurrency);
+    });
+
+    for (const entry of changedCurrencies) {
+        if (entry.from === sourceCurrency && entry.to === targetCurrency) {
             rates[sourceCurrency] = entry.oldChangedCurrencyRate;
+            break;
         }
-        // console.log( entry.oldChangedCurrencyRate);
     }
 
-    document.getElementById("rates-data").textContent = JSON.stringify(rates);
-    localStorage.setItem("changedCurrencies", JSON.stringify(newChangedCurrencies));
-    console.log(newChangedCurrencies.length);
 
-    console.log("sadas" );
+    document.getElementById("rates-data").textContent = JSON.stringify(rates);
+
+    if (window.isAuthenticated) {
+        await fetch('/api/changed/remove/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken'),
+            },
+            body: JSON.stringify({ from: sourceCurrency, to: targetCurrency })
+        });
+    } else {
+        saveChangedCurrenciesToCookie(newChangedCurrencies);
+    }
 
 }
 
-export function loadChangedCurrencyToRates() {
+export async function loadChangedCurrencyToRates() {
 
     let rates = JSON.parse(document.getElementById("rates-data").textContent);
-    let new_rate
-    // console.log("old euro = "+JSON.parse(document.getElementById("rates-data").textContent)['EUR'])
 
-    let changedCurrencies = JSON.parse(localStorage.getItem("changedCurrencies")) || [];
-    for (let i = 0; i < changedCurrencies.length ; i++) {
+    let changedCurrencies = await fetchChangedCurrencies();
+
+    for (let i = 0; i < changedCurrencies.length; i++) {
         let entry = changedCurrencies[i];
-        // console.log(entry);
         let changedCurrency = entry.from;
         let notChangedCurrency = entry.to;
 
-        // console.log(changedCurrency + " " + notChangedCurrency );
-        // console.log(rates[changedCurrency] + " " + rates[notChangedCurrency] );
-        let new_rate = Math.pow(entry.toValue /(entry.fromValue * rates[notChangedCurrency]),-1);
+        let new_rate = Math.pow(entry.toValue / (entry.fromValue * rates[notChangedCurrency]), -1);
         rates[changedCurrency] = new_rate;
-        // console.log(new_rate);
     }
     document.getElementById("rates-data").textContent = JSON.stringify(rates);
-    // console.log("new euro = "+JSON.parse(document.getElementById("rates-data").textContent)['EUR'])
 }
 
+async function fetchChangedCurrencies() {
+    if (window.isAuthenticated) {
+        const response = await fetch('/api/changed/');
+        if (!response.ok) {
+            console.error("Не удалось получить данные с сервера");
+            return [];
+        }
+        const data = await response.json();
+
+        return data.data;
+    } else {
+        return getChangedCurrenciesFromCookie();
+    }
+}
+
+
+// методы для куккк
+
+function getChangedCurrenciesFromCookie() {
+    const match = document.cookie.match(/(?:^|; )changedCurrencies=([^;]*)/);
+    if (!match) return [];
+    try {
+        return JSON.parse(decodeURIComponent(match[1]));
+    } catch (e) {
+        return [];
+    }
+}
+
+function saveChangedCurrenciesToCookie(changedCurrencies) {
+    document.cookie = "changedCurrencies=" + encodeURIComponent(JSON.stringify(changedCurrencies)) +
+        "; path=/; max-age=604800";  // 7 дней
+}
+
+async function addChangedCurrencyToCookie(newEntry) {
+    let changedCurrencies = getChangedCurrenciesFromCookie();
+
+    changedCurrencies = changedCurrencies.filter(entry => !(entry.from === newEntry.from && entry.to === newEntry.to));
+
+    changedCurrencies.unshift(newEntry);
+
+    saveChangedCurrenciesToCookie(changedCurrencies);
+
+    await renderChangedCurrencies();
+}

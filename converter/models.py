@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 
 class FavouriteCurrencyPair(models.Model):
@@ -18,10 +19,20 @@ class UserConversionHistory(models.Model):
     from_currency = models.CharField(max_length=10)
     to_currency = models.CharField(max_length=10)
     amount = models.FloatField()
-    timestamp = models.DateTimeField(auto_now_add=True)  # автоматическая установка времени
+    timestamp = models.DateTimeField(default=timezone.now)  # автоматическая установка времени
 
     class Meta:
         ordering = ['-timestamp']  # новые записи - первые
 
     def __str__(self):
         return f"{self.user.username}: {self.amount} {self.from_currency} to {self.to_currency} at {self.timestamp.strftime('%Y-%m-%d %H:%M')}"
+
+
+class ChangedCurrency(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    from_currency = models.CharField(max_length=3)
+    to_currency = models.CharField(max_length=3)
+    from_value = models.FloatField()
+    to_value = models.FloatField()
+    old_changed_currency_rate = models.FloatField()
+    created_at = models.DateTimeField(auto_now_add=True)

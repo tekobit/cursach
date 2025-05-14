@@ -13,10 +13,10 @@ document.getElementById("menu-btn").addEventListener("click", function(){
     document.getElementById("sidebar").classList.toggle("open");
     updateSidebarSize(); // Подгоняем высоту
 })
-document.getElementById("save-btn").addEventListener("click", function(){
-    saveCurrencyRate()
-    loadChangedCurrencyToRates()
-    renderChangedCurrencies()
+document.getElementById("save-btn").addEventListener("click", async function () {
+    await saveCurrencyRate()
+    await loadChangedCurrencyToRates()
+    await renderChangedCurrencies()
     updateOutput('input1', 'input2', 'currency1', 'currency2');
 })
 
@@ -25,13 +25,13 @@ window.addEventListener("load", updateSidebarSize);
 window.addEventListener("resize", updateSidebarSize);
 
 // при загрузке страницы
-window.onload = function() {
-    loadChangedCurrencyToRates()
+window.onload = async function () {
+    await loadChangedCurrencyToRates()
 
     updateOutput('input1', 'input2', 'currency1', 'currency2');
-    izbrannoe.renderFavourites();
-    izbrannoe.handleActiveness();
-    renderChangedCurrencies();
+    await izbrannoe.renderFavourites();
+    await izbrannoe.handleActiveness();
+    await renderChangedCurrencies();
 };
 
 // добавляем события на поля выбора валют

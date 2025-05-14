@@ -1,4 +1,5 @@
 from django.http import JsonResponse
+from django.utils import timezone
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 import json
@@ -23,11 +24,12 @@ def add_history_entry(request):
         except ValueError:
             return JsonResponse({"error": "Invalid amount format"}, status=400)
 
-        UserConversionHistory.objects.create(
+        entry, created = UserConversionHistory.objects.update_or_create(
             user=request.user,
             from_currency=from_currency,
             to_currency=to_currency,
-            amount=amount
+            amount=amount,
+            defaults={"timestamp": timezone.now()}  # Обновим время, если уже есть
         )
 
         max_history_size = 150
