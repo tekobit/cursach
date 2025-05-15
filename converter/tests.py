@@ -383,16 +383,14 @@ class ChangedCurrencyApiTests(TestCase):
             'from': 'USD',
             'to': 'RUB',
             'fromValue': 1,
-            'toValue': 100.0,
-            'oldChangedCurrencyRate': 80.0
+            'toValue': 100.0
         }
 
         self.custom_rate_payload1 = {
             'from': 'RUB',
             'to': 'USD',
             'fromValue': 100,
-            'toValue': 1,
-            'oldChangedCurrencyRate': 0.0125
+            'toValue': 1
         }
         self.changed_currency_api_data1 = self.custom_rate_payload1
 
@@ -400,8 +398,7 @@ class ChangedCurrencyApiTests(TestCase):
             'from': 'EUR',
             'to': 'USD',
             'fromValue': 0.9,
-            'toValue': 1,
-            'oldChangedCurrencyRate': 1.1
+            'toValue': 1
         }
 
     def test_get_changed_currencies_unauthenticated(self):
@@ -432,7 +429,6 @@ class ChangedCurrencyApiTests(TestCase):
         self.assertEqual(entry.to_currency, self.changed_currency_api_data1['to'])
         self.assertEqual(entry.from_value, self.changed_currency_api_data1['fromValue'])
         self.assertEqual(entry.to_value, self.changed_currency_api_data1['toValue'])
-        self.assertEqual(entry.old_changed_currency_rate, self.changed_currency_api_data1['oldChangedCurrencyRate'])
 
     def test_remove_changed_currency_authenticated(self):
         self.client.login(username=self.username, password=self.password)
