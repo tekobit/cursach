@@ -80,10 +80,15 @@ export async function saveToHistory(sourceCurrency, targetCurrency, amount) { //
 
 export async function renderHistory() { // +async
     const historyContainer = document.getElementById("historyList");
-    if (!historyContainer) return;
+    const deleteHistoryButton = document.getElementById("delete_history_button");
+
+    if (!historyContainer || !deleteHistoryButton) {
+        console.error("History container or delete button not found!");
+        return;
+    }
 
     historyContainer.classList.add("fade-out");
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise(resolve => historyContainer.addEventListener('transitionend', resolve, { once: true }));
 
     let historyEntries = [];
     if (window.isAuthenticated) {
@@ -107,50 +112,58 @@ export async function renderHistory() { // +async
     // исключаем записи, где amount не число
     historyEntries = historyEntries.filter(entry => typeof entry.amount === 'number' && !isNaN(entry.amount));
 
+    if (historyEntries.length === 0) {
+        deleteHistoryButton.style.display = 'none';
+    } else {
+        deleteHistoryButton.style.display = 'inline-flex';
+    }
 
-    // для более плавной анимации после получения данных
-    requestAnimationFrame(() => {
-        historyContainer.innerHTML = ""; // очищаем контейнер один раз
+    historyContainer.innerHTML = ""; // очищаем контейнер один раз
 
-        historyEntries.forEach(entry => {
-            const btn = document.createElement("button");
-            btn.innerText = `${entry.amount} ${entry.from} → ${entry.to}`;
-            btn.className = "hst_conv";
+    historyEntries.forEach(entry => {
+        const btn = document.createElement("button");
+        btn.innerText = `${entry.amount} ${entry.from} → ${entry.to}`;
+        btn.className = "hst_conv";
 
-            btn.onclick = () => {
-                document.getElementById("currency1").value = entry.from;
-                document.getElementById("currency2").value = entry.to;
-                $("#currency1").trigger("change");
-                $("#currency2").trigger("change");
-                document.getElementById("input1").value = entry.amount;
-                updateOutput("input1", "input2", "currency1", "currency2", entry.amount);
-            };
+        btn.onclick = () => {
+            document.getElementById("currency1").value = entry.from;
+            document.getElementById("currency2").value = entry.to;
+            $("#currency1").trigger("change");
+            $("#currency2").trigger("change");
+            document.getElementById("input1").value = entry.amount;
+            updateOutput("input1", "input2", "currency1", "currency2", entry.amount);
+        };
 
-            const removeBtn = document.createElement("span");
-            removeBtn.textContent = " ✖";
-            removeBtn.className = "remove-btn";
-            removeBtn.onclick = async (e) => {
-                e.stopPropagation();
-                btn.style.pointerEvents = 'none';
-                btn.classList.add("disappear");
-                await new Promise(resolve => setTimeout(resolve, 500)); // ждем завершения анимации
+        const removeBtn = document.createElement("span");
+        removeBtn.textContent = " ✖";
+        removeBtn.className = "remove-btn";
+        removeBtn.onclick = async (e) => {
+            e.stopPropagation();
+            btn.style.pointerEvents = 'none';
+            btn.classList.add("disappear");
+            await new Promise(resolve => setTimeout(resolve, 300)); // ждем завершения анимации
+
+            if (window.isAuthenticated) {
                 await removeFromHistory(entry.from, entry.to, entry.amount);
-                await renderHistory();
-            };
-            btn.appendChild(removeBtn);
-            historyContainer.appendChild(btn);
-            // плавное появление кнопки
-            requestAnimationFrame(() => {
-                 setTimeout(() => btn.classList.add("show"), 10); // небольшая задержка для CSS-перехода
-            });
-        });
+            } else {
+                removeFromHistoryCookie(entry.from, entry.to, entry.amount);
+            }
 
-        historyContainer.classList.remove("fade-out");
-        // обновляем размер сайдбара, если он есть и видимый
-        if (typeof updateSidebarSize === 'function') {
-            updateSidebarSize();
-        }
+            await renderHistory();
+        };
+        btn.appendChild(removeBtn);
+        historyContainer.appendChild(btn);
+        // плавное появление кнопки
+        requestAnimationFrame(() => {
+             setTimeout(() => btn.classList.add("show"), 10); // небольшая задержка для CSS-перехода
+        });
     });
+
+    historyContainer.classList.remove("fade-out");
+    // обновляем размер сайдбара, если он есть и видимый
+    if (typeof updateSidebarSize === 'function') {
+        updateSidebarSize();
+    }
 }
 
 export async function clearHistory() {
@@ -168,7 +181,8 @@ export async function clearHistory() {
             console.error("Error clearing history on server:", error);
         }
     } else {
-        document.cookie = "conversionHistory=; path=/; max-age=0";
+        // document.cookie = "conversionHistory=; path=/; max-age=0";
+        saveHistoryToCookie([]);
     }
     await renderHistory(); // обновляем отображение
 }
