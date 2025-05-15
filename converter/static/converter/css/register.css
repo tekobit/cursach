@@ -42,8 +42,8 @@ input {
     border: 1px solid #ccc;
     border-radius: 10px;
     font-size: 14px;
-    width: 100%; /* Задаем ширину для всех полей ввода */
-    box-sizing: border-box; /* Чтобы padding не увеличивал ширину */
+    width: 100%;
+    box-sizing: border-box;
 }
 
 input:focus {
