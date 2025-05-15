@@ -126,6 +126,3 @@ izbr.addEventListener("click", async function () {
     }
 
 });
-
-
-
