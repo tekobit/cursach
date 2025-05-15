@@ -9,8 +9,8 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
     <link rel="stylesheet" href="{% static 'converter/css/converter.css' %}?v={% now 'U' %}">
     <link rel="stylesheet" href="{% static 'converter/css/auth.css' %}?v={% now 'U' %}">
-    <link rel="stylesheet" href="{% static 'converter/sidebar/menu.css' %}?v={% now 'U' %}">
-    <link rel="icon" type="image/x-icon" href="{% static 'converter/favicon.ico' %}">
+    <link rel="stylesheet" href="{% static 'converter/css/menu.css' %}?v={% now 'U' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'converter/icons/favicon.ico' %}">
 
 </head>
 
@@ -79,7 +79,7 @@
 <script>
     window.isAuthenticated = {{ request.user.is_authenticated|yesno:"true,false" }};
 </script>
-<script type="module"  src="{% static 'converter/sidebar/sidebar.js' %}?v={% now 'U' %}"></script>
+<script type="module"  src="{% static 'converter/sidebar.js' %}?v={% now 'U' %}"></script>
 <script type="module"  src="{% static 'converter/converter.js' %}?v={% now 'U' %}"></script>
 <script type="module"  src="{% static 'converter/history.js' %}?v={% now 'U' %}"></script>
 <script type="module"  src="{% static 'converter/updateOutput.js' %}?v={% now 'U' %}"></script>

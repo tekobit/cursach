@@ -5,7 +5,7 @@ import {
     updateSidebarSize,
     saveCurrencyRate,
     loadChangedCurrencyToRates
-} from "./sidebar/sidebar.js";
+} from "./sidebar.js";
 import {handleActiveness} from "./izbrannoe.js";
 import {clearHistory} from "./history.js";
 

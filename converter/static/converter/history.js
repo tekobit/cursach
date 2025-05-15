@@ -1,5 +1,5 @@
 import { updateOutput } from './updateOutput.js';
-import { updateSidebarSize } from "./sidebar/sidebar.js";
+import { updateSidebarSize } from "./sidebar.js";
 
 function getHistoryFromCookie() {
     const match = document.cookie.match(/(?:^|; )conversionHistory=([^;]*)/);

@@ -1,4 +1,4 @@
-import {updateOutput} from "../updateOutput.js";
+import {updateOutput} from "./updateOutput.js";
 
 
 export function updateSidebarSize() {
