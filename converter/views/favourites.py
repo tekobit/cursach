@@ -37,7 +37,7 @@ def add_favourite(request):
     if not created:
         return JsonResponse({"error": "Уже добавлено"}, status=400)
 
-    return JsonResponse({"success": True})
+    return JsonResponse({"success": True}, status=201)
 
 
 @require_POST
