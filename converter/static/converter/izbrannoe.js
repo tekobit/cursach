@@ -1,11 +1,6 @@
 import {updateOutput} from './updateOutput.js';
 
-// добавляем в избранное
-//TODO неправильно перерассчитываются курсы валют если добавить вал1-вал2 и вал2-вал1 .
-// Сначала все правильно используется курс вал2-вал1 т.к.
-// он добавлен последним, но после удаления вал2-вал1 должен использоваться вал1-вал2
-// но этого не происходит почему-то no ideas((
-// как вариант можно удалить в принципе эту возможность
+
 export async function saveToFavourites(sourceCurrency, targetCurrency) {
     const csrf = getCookie('csrftoken');
     if (window.isAuthenticated) {
@@ -44,7 +39,7 @@ export async function removeFromFavourites(sourceCurrency, targetCurrency) {
             body: JSON.stringify({from: sourceCurrency, to: targetCurrency})
         });
     } else {
-        removeFromFavouritesCookie(sourceCurrency, targetCurrency);
+        await removeFromFavouritesCookie(sourceCurrency, targetCurrency);
     }
 
 }
@@ -141,12 +136,12 @@ function setFavouritesToCookie(favourites) {
         "; path=/; max-age=604800";  // 7 дней
 }
 
-function removeFromFavouritesCookie(sourceCurrency, targetCurrency) {
+async function removeFromFavouritesCookie(sourceCurrency, targetCurrency) {
     let favourites = getFavouritesFromCookie();
 
     favourites = favourites.filter(entry => !(entry.from === sourceCurrency && entry.to === targetCurrency));
 
     setFavouritesToCookie(favourites);
 
-    renderFavourites();
+    await renderFavourites();
 }

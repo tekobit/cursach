@@ -30,7 +30,7 @@ export function updateOutput(sourceId, targetId, currency1Id, currency2Id,amount
     }, 800); // тут таймер, сколько прождать, чтобы сохранить в историю
 }
 
-function getDecimalPlaces(num) {
+export function getDecimalPlaces(num) {
     if (!num.toString().includes('.')) return 0; // No decimal point
     return num.toString().split('.')[1].length;
 }

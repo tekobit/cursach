@@ -19,32 +19,27 @@ export async function saveCurrencyRate() {
     let sourceValue = document.getElementById("input1-sidebar").value;
     let targetValue = document.getElementById("input2-sidebar").value;
 
+    if (Number(sourceCurrency) === 0 || Number(targetValue) === 0 || sourceValue === "" || targetValue === "") { return;}
 
     const selected = document.querySelector('input[name="radio-sidebar"]:checked').value;
-    let rates = JSON.parse(document.getElementById("rates-data").textContent);
 
     let payload;
 
     if (selected === "1") {
         await removeChangedCurrency(sourceCurrency, targetCurrency);
-
         payload = {
             from: sourceCurrency,
             to: targetCurrency,
             fromValue: 1,
-            toValue: targetValue / sourceValue,
-            oldChangedCurrencyRate: rates[sourceCurrency]
+            toValue: targetValue / sourceValue,targetValue,sourceValue,
         };
-
     } else {
         await removeChangedCurrency(targetCurrency, sourceCurrency);
-
         payload = {
             from: targetCurrency,
             to: sourceCurrency,
             fromValue: 1,
-            toValue: sourceValue / targetValue,
-            oldChangedCurrencyRate: rates[targetCurrency]
+            toValue: sourceValue / targetValue,sourceValue,targetValue,
         };
     }
 
@@ -103,20 +98,17 @@ export async function renderChangedCurrencies() {
 export async function removeChangedCurrency(sourceCurrency, targetCurrency) {
 
     let changedCurrencies = await fetchChangedCurrencies();
-    console.log(typeof changedCurrencies);
     let rates = JSON.parse(document.getElementById("rates-data").textContent);
+    let origRates = JSON.parse(document.getElementById("orig-rates-data").textContent);
 
-    const newChangedCurrencies = changedCurrencies.filter(entry => {
+    const changedCurrenciesAfterRemove = changedCurrencies.filter(entry => {
         return !(entry.from === sourceCurrency && entry.to === targetCurrency);
     });
 
     for (const entry of changedCurrencies) {
-        if (entry.from === sourceCurrency && entry.to === targetCurrency) {
-            rates[sourceCurrency] = entry.oldChangedCurrencyRate;
-            break;
-        }
-    }
+        rates[sourceCurrency] = origRates[sourceCurrency];
 
+    }
 
     document.getElementById("rates-data").textContent = JSON.stringify(rates);
 
@@ -130,9 +122,9 @@ export async function removeChangedCurrency(sourceCurrency, targetCurrency) {
             body: JSON.stringify({ from: sourceCurrency, to: targetCurrency })
         });
     } else {
-        saveChangedCurrenciesToCookie(newChangedCurrencies);
+        saveChangedCurrenciesToCookie(changedCurrenciesAfterRemove);
     }
-
+    await loadChangedCurrencyToRates()
 }
 
 export async function loadChangedCurrencyToRates() {
@@ -145,9 +137,8 @@ export async function loadChangedCurrencyToRates() {
         let entry = changedCurrencies[i];
         let changedCurrency = entry.from;
         let notChangedCurrency = entry.to;
-
         let new_rate = Math.pow(entry.toValue / (entry.fromValue * rates[notChangedCurrency]), -1);
-        rates[changedCurrency] = new_rate;
+        rates[changedCurrency] = strip(new_rate);
     }
     document.getElementById("rates-data").textContent = JSON.stringify(rates);
 }
@@ -195,4 +186,10 @@ async function addChangedCurrencyToCookie(newEntry) {
     saveChangedCurrenciesToCookie(changedCurrencies);
 
     await renderChangedCurrencies();
+}
+
+
+
+function strip(number) {
+    return (parseFloat(number).toPrecision(12));
 }

@@ -68,6 +68,7 @@
 
 <!-- загружаем в js табличку -->
 {{ rates|json_script:"rates-data" }}
+{{ rates|json_script:"orig-rates-data" }}
 {% csrf_token %}
 
 <!-- подключаем скрипты -->

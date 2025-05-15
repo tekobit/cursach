@@ -34,5 +34,4 @@ class ChangedCurrency(models.Model):
     to_currency = models.CharField(max_length=3)
     from_value = models.FloatField()
     to_value = models.FloatField()
-    old_changed_currency_rate = models.FloatField()
     created_at = models.DateTimeField(auto_now_add=True)

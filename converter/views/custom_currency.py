@@ -16,7 +16,6 @@ def add_changed_currency(request):
             to_currency=data['to'],
             from_value=data['fromValue'],
             to_value=data['toValue'],
-            old_changed_currency_rate=data['oldChangedCurrencyRate']
         )
         return JsonResponse({"status": "ok"})
 
@@ -39,6 +38,5 @@ def get_changed_currencies(request):
         "to": c.to_currency,
         "fromValue": c.from_value,
         "toValue": c.to_value,
-        "oldChangedCurrencyRate": c.old_changed_currency_rate
     } for c in changed]
     return JsonResponse({"data": result})

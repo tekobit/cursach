@@ -85,24 +85,28 @@ document.querySelector('.swap-btn').addEventListener('click', function () {
 });
 
 // ограничения ввода на числа
-document.querySelectorAll('.only_number_input').forEach(input =>{
+document.querySelectorAll('.only_number_input').forEach(input => {
     input.addEventListener("keydown", (event) => {
-        if (event.code.startsWith("Digit")) {
+        const allowedKeys = [
+            "Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab", "Enter"
+        ];
+
+        if (event.key >= '0' && event.key <= '9') {
             return;
         }
 
-        if (["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab", "Enter"].includes(event.code)) {
+        if (allowedKeys.includes(event.key)) {
             return;
         }
 
-        if (event.code === "Period" && !event.target.value.includes(".")) {
+        if (event.key === "." && !event.target.value.includes(".")) {
             return;
         }
 
         event.preventDefault();
     });
+});
 
-})
 
 
 let izbr = document.getElementById("izbrannoeBtn");
