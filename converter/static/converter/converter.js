@@ -7,17 +7,23 @@ import {
     loadChangedCurrencyToRates
 } from "./sidebar/sidebar.js";
 import {handleActiveness} from "./izbrannoe.js";
+import {clearHistory} from "./history.js";
 
 
 document.getElementById("menu-btn").addEventListener("click", function(){
     document.getElementById("sidebar").classList.toggle("open");
     updateSidebarSize(); // Подгоняем высоту
 })
+
 document.getElementById("save-btn").addEventListener("click", async function () {
     await saveCurrencyRate()
     await loadChangedCurrencyToRates()
     await renderChangedCurrencies()
     updateOutput('input1', 'input2', 'currency1', 'currency2');
+})
+
+document.getElementById("delete_history_button").addEventListener("click", async function () {
+    await clearHistory()
 })
 
 

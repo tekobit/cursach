@@ -14,7 +14,8 @@ urlpatterns = [
 
     path("api/history/", views.get_history, name="get_history"),
     path("api/history/add/", views.add_history_entry, name="add_history_entry"),
-    path("api/history/clear/", views.clear_user_history, name="clear_user_history"),
+    path("api/history/clear/", views.clear_user_history, name="clear_whole_user_history"),
+    path('api/history/delete/', views.delete_history_entry, name='delete_history_entry'),
 
     path('api/changed/add/', views.add_changed_currency,name="add_changed_currency"),
     path('api/changed/remove/', views.remove_changed_currency,name="remove_changed_currency"),

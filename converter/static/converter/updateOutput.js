@@ -1,4 +1,4 @@
-import {saveToHistory,renderHistory} from './history.js'
+import {saveToHistory} from './history.js'
 // функция для изменения значения в полях ввода и вывода
 let debounceTimer;
 
@@ -27,7 +27,7 @@ export function updateOutput(sourceId, targetId, currency1Id, currency2Id,amount
     debounceTimer = setTimeout(async () => { // +async
         await saveToHistory(sourceCurrency, targetCurrency, sourceValue); // +await
         // renderHistory()
-    }, 800); // тут таймер, сколько прождать, чтобы сохранить в историю хардкод(((
+    }, 800); // тут таймер, сколько прождать, чтобы сохранить в историю
 }
 
 function getDecimalPlaces(num) {

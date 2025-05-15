@@ -41,7 +41,7 @@
 
 
         <!--** кнопка для смены местами валют ** -->
-        <button class="swap-btn">⇆</button>
+        <button class="swap-btn"><span class="swap-icon">⇆</span></button>
 
         <div class="currency-box">
             <!--** второе поле для ввода и выбора валюты ** -->
@@ -60,8 +60,9 @@
 
     </div>
 
-    <div id="historyList"></div>
     <div id="favouriteList"></div>
+    <div id="historyList"></div>
+    <button id="delete_history_button"><img src="{% static 'converter/icons/recycle_bin.svg' %}" width="20" height="20"  alt="Delete"></button>
 
 </div>
 

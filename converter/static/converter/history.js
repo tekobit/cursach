@@ -83,6 +83,7 @@ export async function renderHistory() { // +async
     if (!historyContainer) return;
 
     historyContainer.classList.add("fade-out");
+    await new Promise(resolve => setTimeout(resolve, 500));
 
     let historyEntries = [];
     if (window.isAuthenticated) {
@@ -125,20 +126,18 @@ export async function renderHistory() { // +async
                 updateOutput("input1", "input2", "currency1", "currency2", entry.amount);
             };
 
-            if (!window.isAuthenticated) {
-                const removeBtn = document.createElement("span");
-                removeBtn.textContent = " ✖";
-                removeBtn.className = "remove-btn";
-                removeBtn.onclick = async (e) => {
-                    e.stopPropagation();
-                    btn.style.pointerEvents = 'none';
-                    btn.classList.add("disappear");
-                    await new Promise(resolve => setTimeout(resolve, 500)); // ждем завершения анимации
-                    removeFromHistoryCookie(entry.from, entry.to, entry.amount);
-                    await renderHistory();
-                };
-                btn.appendChild(removeBtn);
-            }
+            const removeBtn = document.createElement("span");
+            removeBtn.textContent = " ✖";
+            removeBtn.className = "remove-btn";
+            removeBtn.onclick = async (e) => {
+                e.stopPropagation();
+                btn.style.pointerEvents = 'none';
+                btn.classList.add("disappear");
+                await new Promise(resolve => setTimeout(resolve, 500)); // ждем завершения анимации
+                await removeFromHistory(entry.from, entry.to, entry.amount);
+                await renderHistory();
+            };
+            btn.appendChild(removeBtn);
             historyContainer.appendChild(btn);
             // плавное появление кнопки
             requestAnimationFrame(() => {
@@ -172,4 +171,35 @@ export async function clearHistory() {
         document.cookie = "conversionHistory=; path=/; max-age=0";
     }
     await renderHistory(); // обновляем отображение
+}
+
+export async function removeFromHistory(sourceCurrency, targetCurrency, amount) {
+    const numericAmount = parseFloat(amount);
+    if (isNaN(numericAmount)) return;
+
+    if (window.isAuthenticated) {
+        try {
+            const csrfToken = window.getCookie('csrftoken');
+            const response = await fetch('/api/history/delete/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({
+                    from: sourceCurrency,
+                    to: targetCurrency,
+                    amount: numericAmount
+                })
+            });
+            if (!response.ok) {
+                const err = await response.json();
+                console.error("Server deletion failed:", err);
+            }
+        } catch (error) {
+            console.error("Error deleting entry from server:", error);
+        }
+    } else {
+        removeFromHistoryCookie(sourceCurrency, targetCurrency, numericAmount);
+    }
 }

@@ -7,6 +7,31 @@ import json
 from converter.models import UserConversionHistory
 
 
+@login_required
+def get_history(request):
+    if request.method == "GET":
+        # последние 7 записей
+        history_entries = UserConversionHistory.objects.filter(user=request.user)[:7]
+        data = [
+            {
+                "from": entry.from_currency,
+                "to": entry.to_currency,
+                "amount": entry.amount,
+                "date": entry.timestamp.isoformat()
+            }
+            for entry in history_entries
+        ]
+        return JsonResponse(data, safe=False)
+    return JsonResponse({"error": "Invalid request method"}, status=405)
+
+
+@require_POST
+@login_required
+def clear_user_history(request):
+    UserConversionHistory.objects.filter(user=request.user).delete()
+    return JsonResponse({"success": True})
+
+
 @require_POST
 @login_required
 def add_history_entry(request):
@@ -49,23 +74,33 @@ def add_history_entry(request):
 
 @require_POST
 @login_required
-def clear_user_history(request):
-    UserConversionHistory.objects.filter(user=request.user).delete()
-    return JsonResponse({"success": True})
+def delete_history_entry(request):
+    try:
+        data = json.loads(request.body)
+        from_currency = data.get("from")
+        to_currency = data.get("to")
+        amount = data.get("amount")
 
-@login_required
-def get_history(request):
-    if request.method == "GET":
-        # последние 7 записей
-        history_entries = UserConversionHistory.objects.filter(user=request.user)[:7]
-        data = [
-            {
-                "from": entry.from_currency,
-                "to": entry.to_currency,
-                "amount": entry.amount,
-                "date": entry.timestamp.isoformat()
-            }
-            for entry in history_entries
-        ]
-        return JsonResponse(data, safe=False)
-    return JsonResponse({"error": "Invalid request method"}, status=405)
+        if not all([from_currency, to_currency, amount]):
+            return JsonResponse({"error": "Missing data"}, status=400)
+
+        try:
+            amount = float(amount)
+        except ValueError:
+            return JsonResponse({"error": "Invalid amount format"}, status=400)
+
+        deleted_count, _ = UserConversionHistory.objects.filter(
+            user=request.user,
+            from_currency=from_currency,
+            to_currency=to_currency,
+            amount=amount
+        ).delete()
+
+        if deleted_count == 0:
+            return JsonResponse({"error": "No matching entry found"}, status=404)
+
+        return JsonResponse({"success": True})
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+    except Exception as e:
+        return JsonResponse({"error": "An unexpected error occurred"}, status=500)
