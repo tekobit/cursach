@@ -4,7 +4,6 @@ let debounceTimer;
 
 export function updateOutput(sourceId, targetId, currency1Id, currency2Id,amount = null) {
     let rates = JSON.parse(document.getElementById("rates-data").textContent);
-    console.log(rates)
 
     const sourceCurrency = document.getElementById(currency1Id).value;
     const targetCurrency = document.getElementById(currency2Id).value;

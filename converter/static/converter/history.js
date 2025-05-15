@@ -1,25 +1,33 @@
 import { updateOutput } from './updateOutput.js';
 import { updateSidebarSize } from "./sidebar/sidebar.js";
 
-function getHistoryFromLocalStorage() {
-    return JSON.parse(localStorage.getItem("conversionHistory")) || [];
+function getHistoryFromCookie() {
+    const match = document.cookie.match(/(?:^|; )conversionHistory=([^;]*)/);
+    if (!match) return [];
+    try {
+        return JSON.parse(decodeURIComponent(match[1]));
+    } catch (e) {
+        return [];
+    }
 }
 
-function saveHistoryToLocalStorage(historyArray) {
-    localStorage.setItem("conversionHistory", JSON.stringify(historyArray));
+function saveHistoryToCookie(historyArray) {
+    document.cookie = "conversionHistory=" + encodeURIComponent(JSON.stringify(historyArray)) +
+        "; path=/; max-age=604800";
 }
 
-function removeFromHistoryLocalStorage(sourceCurrency, targetCurrency, amount) {
-    let history = getHistoryFromLocalStorage();
+function removeFromHistoryCookie(sourceCurrency, targetCurrency, amount) {
+    let history = getHistoryFromCookie();
     const initialLength = history.length;
     history = history.filter(entry =>
         !(entry.from === sourceCurrency && entry.to === targetCurrency && entry.amount === parseFloat(amount))
     );
 
     if (history.length < initialLength) {
-        saveHistoryToLocalStorage(history);
+        saveHistoryToCookie(history);
     }
 }
+
 
 export async function saveToHistory(sourceCurrency, targetCurrency, amount) { // +async
     const numericAmount = parseFloat(amount);
@@ -49,10 +57,9 @@ export async function saveToHistory(sourceCurrency, targetCurrency, amount) { //
             console.error("Error saving history to server:", error);
         }
     } else {
-        // логика для localStorage для неаутентифицированных
-        removeFromHistoryLocalStorage(sourceCurrency, targetCurrency, numericAmount);
+        removeFromHistoryCookie(sourceCurrency, targetCurrency, numericAmount);
 
-        let history = getHistoryFromLocalStorage();
+        let history = getHistoryFromCookie();
         history.push({
             from: sourceCurrency,
             to: targetCurrency,
@@ -61,10 +68,11 @@ export async function saveToHistory(sourceCurrency, targetCurrency, amount) { //
         });
 
         if (history.length > 150) {
-            history.sort((a, b) => new Date(b.date) - new Date(a.date)); // удаляем самую старую
+            history.sort((a, b) => new Date(b.date) - new Date(a.date));
             history = history.slice(0, 150);
         }
-        saveHistoryToLocalStorage(history);
+
+        saveHistoryToCookie(history);
     }
     // вызываем renderHistory для обновления UI
     await renderHistory();
@@ -90,7 +98,7 @@ export async function renderHistory() { // +async
             console.error("Error fetching history from server:", error);
         }
     } else {
-        historyEntries = getHistoryFromLocalStorage();
+        historyEntries = getHistoryFromCookie();
         historyEntries.sort((a, b) => new Date(b.date) - new Date(a.date)); // новые вверху
         historyEntries = historyEntries.slice(0, 7); // последние 7
     }
@@ -126,7 +134,7 @@ export async function renderHistory() { // +async
                     btn.style.pointerEvents = 'none';
                     btn.classList.add("disappear");
                     await new Promise(resolve => setTimeout(resolve, 500)); // ждем завершения анимации
-                    removeFromHistoryLocalStorage(entry.from, entry.to, entry.amount);
+                    removeFromHistoryCookie(entry.from, entry.to, entry.amount);
                     await renderHistory();
                 };
                 btn.appendChild(removeBtn);
@@ -161,7 +169,7 @@ export async function clearHistory() {
             console.error("Error clearing history on server:", error);
         }
     } else {
-        localStorage.removeItem("conversionHistory");
+        document.cookie = "conversionHistory=; path=/; max-age=0";
     }
     await renderHistory(); // обновляем отображение
 }
